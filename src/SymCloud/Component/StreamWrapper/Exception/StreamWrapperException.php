@@ -8,9 +8,11 @@
  * with this source code in the file LICENSE.
  */
 
-namespace SymCloud\Component\StreamWrapper;
+namespace SymCloud\Component\StreamWrapper\Exception;
 
-class StreamWrapper
+use Exception;
+
+class StreamWrapperException extends Exception
 {
 
 } 
