@@ -30,7 +30,6 @@ class StreamWrapper implements StreamWrapperInterface
      */
     public function __construct()
     {
-        // TODO: Implement __construct() method.
     }
 
     /**
@@ -52,7 +51,7 @@ class StreamWrapper implements StreamWrapperInterface
     {
         $this->stream = $this->createStream($path);
 
-        return $this->stream->open($this->createStreamMode('r'));
+        return $this->stream->open();
     }
 
     /**

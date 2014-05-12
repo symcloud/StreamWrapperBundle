@@ -32,7 +32,7 @@ class LocalAdapter implements AdapterInterface, StreamFactoryInterface
     public function createStream($key)
     {
         $path = $this->computePath($key);
-        
+
         if (is_dir($path)) {
             return new LocalDirectoryStream($path);
         } else {
