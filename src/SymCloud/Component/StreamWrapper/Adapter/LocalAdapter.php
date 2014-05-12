@@ -10,6 +10,7 @@
 
 namespace SymCloud\Component\StreamWrapper\Adapter;
 
+use SymCloud\Component\StreamWrapper\Stream\LocalDirectoryStream;
 use SymCloud\Component\StreamWrapper\Stream\LocalFileStream;
 use SymCloud\Component\StreamWrapper\Util\Path;
 
@@ -31,9 +32,9 @@ class LocalAdapter implements AdapterInterface, StreamFactoryInterface
     public function createStream($key)
     {
         $path = $this->computePath($key);
+        
         if (is_dir($path)) {
-            // TODO create local directory stream
-            return null;
+            return new LocalDirectoryStream($path);
         } else {
             return new LocalFileStream($path);
         }
