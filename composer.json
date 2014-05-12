@@ -1,0 +1,31 @@
+{
+    "name": "symcloud/stream-wrapper-bundle",
+    "type": "library",
+    "description": "Enables dynamic Stream wrapper",
+    "license": "MIT",
+    "keywords": ["file", "symcloud", "stream", "php streamwrapper"],
+    "version": "dev-develop",
+    "authors": [
+        {
+            "name": "Symcloud Community",
+            "homepage": "https://github.com/SymCloud/StreamWrapperBundle/contributors"
+        }
+    ],
+    "repositories": [
+    ],
+    "require": {
+        "php": ">=5.4",
+        "doctrine/orm": ">=2.2.3,<2.4-dev",
+        "symfony/framework-bundle": "2.4.*",
+        "sensio/distribution-bundle": "2.3.*",
+    },
+    "require-dev": {
+        "symfony/symfony": "2.4.*",
+        "phpunit/phpunit": "4.0.*"
+    },
+    "autoload": {
+        "psr-0": {
+            "SymCloud\\": "src/"
+        }
+    }
+}
