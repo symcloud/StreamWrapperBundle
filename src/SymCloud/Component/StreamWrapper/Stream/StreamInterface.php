@@ -20,7 +20,7 @@ interface StreamInterface
 
     public function flush();
 
-    public function read($count);
+    public function read($count = 0);
 
     public function seek($offset, $whence);
 
@@ -30,7 +30,7 @@ interface StreamInterface
 
     public function write($data);
 
-    public function open(StreamMode $mode);
+    public function open(StreamMode $mode = null);
 
     public function unlink();
 }

@@ -12,6 +12,7 @@ namespace SymCloud\Component\StreamWrapper;
 
 use SymCloud\Component\StreamWrapper\Stream\StreamInterface;
 use SymCloud\Component\StreamWrapper\Stream\StreamMode;
+use Symfony\Component\Intl\Exception\NotImplementedException;
 
 /**
  * Class StreamWrapper
@@ -37,7 +38,11 @@ class StreamWrapper implements StreamWrapperInterface
      */
     public function dir_closedir()
     {
-        // TODO: Implement dir_closedir() method.
+        if ($this->stream) {
+            return $this->stream->close();
+        }
+
+        return false;
     }
 
     /**
@@ -45,7 +50,9 @@ class StreamWrapper implements StreamWrapperInterface
      */
     public function dir_opendir($path, $options)
     {
-        // TODO: Implement dir_opendir() method.
+        $this->stream = $this->createStream($path);
+
+        return $this->stream->open($this->createStreamMode('r'));
     }
 
     /**
@@ -53,7 +60,11 @@ class StreamWrapper implements StreamWrapperInterface
      */
     public function dir_readdir()
     {
-        // TODO: Implement dir_readdir() method.
+        if ($this->stream) {
+            return $this->stream->read();
+        }
+
+        return false;
     }
 
     /**
@@ -61,7 +72,7 @@ class StreamWrapper implements StreamWrapperInterface
      */
     public function dir_rewinddir()
     {
-        // TODO: Implement dir_rewinddir() method.
+        throw new NotImplementedException('stream_lock');
     }
 
     /**
@@ -69,7 +80,7 @@ class StreamWrapper implements StreamWrapperInterface
      */
     public function mkdir($path, $mode, $options)
     {
-        // TODO: Implement mkdir() method.
+        throw new NotImplementedException('stream_lock');
     }
 
     /**
@@ -77,7 +88,7 @@ class StreamWrapper implements StreamWrapperInterface
      */
     public function rename($path_from, $path_to)
     {
-        // TODO: Implement rename() method.
+        throw new NotImplementedException('stream_lock');
     }
 
     /**
@@ -85,7 +96,7 @@ class StreamWrapper implements StreamWrapperInterface
      */
     public function rmdir($path, $options)
     {
-        // TODO: Implement rmdir() method.
+        throw new NotImplementedException('stream_lock');
     }
 
     /**
@@ -139,7 +150,7 @@ class StreamWrapper implements StreamWrapperInterface
      */
     public function stream_lock($operation)
     {
-        // TODO: Implement stream_lock() method.
+        throw new NotImplementedException('stream_lock');
     }
 
     /**
@@ -147,7 +158,9 @@ class StreamWrapper implements StreamWrapperInterface
      */
     public function stream_open($path, $mode, $options, &$opened_path)
     {
-        // TODO: Implement stream_open() method.
+        $this->stream = $this->createStream($path);
+
+        return $this->stream->open($this->createStreamMode($mode));
     }
 
     /**
@@ -179,7 +192,7 @@ class StreamWrapper implements StreamWrapperInterface
      */
     public function stream_set_option($option, $arg1, $arg2)
     {
-        // TODO: Implement stream_set_option() method.
+        throw new NotImplementedException('stream_set_option');
     }
 
     /**
