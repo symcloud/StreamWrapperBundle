@@ -10,14 +10,28 @@
 
 namespace SymCloud\Component\StreamWrapper\Filesystem;
 
+use SymCloud\Component\StreamWrapper\Stream\MountPointStream;
 use SymCloud\Component\StreamWrapper\Stream\StreamInterface;
 
-interface FilesystemInterface
+class VirtualFilesystem implements FilesystemInterface
 {
+    /**
+     * @var string
+     */
+    private $virtualPath;
+
+    function __construct($virtualPath)
+    {
+        $this->virtualPath = $virtualPath;
+    }
+
     /**
      * @param string $key
      * @param string $domain
      * @return StreamInterface
      */
-    public function createStream($key, $domain);
+    public function createStream($key, $domain)
+    {
+        return new MountPointStream($this->virtualPath, $key, $domain);
+    }
 }

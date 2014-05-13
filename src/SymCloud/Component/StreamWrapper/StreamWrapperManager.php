@@ -41,7 +41,7 @@ final class StreamWrapperManager
 
     /**
      * registers the stream wrapper to handle the specified scheme
-     * @param string $scheme Default is gaufrette
+     * @param string $scheme default is data
      * @param string $className
      * @throws \RuntimeException
      */
@@ -53,7 +53,7 @@ final class StreamWrapperManager
             throw new \RuntimeException(
                 sprintf(
                     'Could not register stream wrapper class %s for scheme %s.',
-                    __CLASS__,
+                    $className,
                     $scheme
                 )
             );

@@ -14,6 +14,8 @@ use SymCloud\Component\StreamWrapper\Adapter\AdapterInterface;
 use SymCloud\Component\StreamWrapper\Adapter\StreamFactoryInterface;
 use SymCloud\Component\StreamWrapper\Stream\MemoryStream;
 use SymCloud\Component\StreamWrapper\Stream\StreamInterface;
+use SymCloud\Component\StreamWrapper\StreamWrapperManager;
+use SymCloud\Component\StreamWrapper\Util\Path;
 
 class Filesystem implements FilesystemInterface
 {
@@ -29,12 +31,20 @@ class Filesystem implements FilesystemInterface
 
     /**
      * @param string $key
+     * @param string $domain
      * @return StreamInterface
      */
-    public function createStream($key)
+    public function createStream($key, $domain)
     {
+        if ($key !== '/') {
+            $completePath = Path::normalize($domain . '/' . $key);
+            if (StreamWrapperManager::getFilesystemMap()->has($completePath)) {
+                return StreamWrapperManager::getFilesystemMap()->get($completePath)->createStream('/', $completePath);
+            }
+        }
+
         if ($this->adapter instanceof StreamFactoryInterface) {
-            return $this->adapter->createStream($key);
+            return $this->adapter->createStream($key, $domain);
         }
 
         return new MemoryStream($this, $key);

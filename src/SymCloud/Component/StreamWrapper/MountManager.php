@@ -11,10 +11,25 @@
 namespace SymCloud\Component\StreamWrapper;
 
 use SymCloud\Component\StreamWrapper\Filesystem\FilesystemInterface;
+use SymCloud\Component\StreamWrapper\Filesystem\VirtualFilesystem;
+use SymCloud\Component\StreamWrapper\Util\Path;
 
 class MountManager implements MountManagerInterface
 {
+    /**
+     * @var array
+     */
     private $filesystems = array();
+
+    /**
+     * @var FilesystemInterface[]
+     */
+    private $filesystemTree = array();
+
+    function __construct($filesystems = array())
+    {
+        $this->filesystems = $filesystems;
+    }
 
     /**
      * returns an array of all the registered filesystems where the key is the
@@ -33,6 +48,21 @@ class MountManager implements MountManagerInterface
      */
     public function set($domain, FilesystemInterface $filesystem)
     {
+        $domainParts = explode('/', $domain);
+        $domainPart = '';
+        $array = & $this->filesystemTree;
+        foreach ($domainParts as $part) {
+            $domainPart = ltrim(Path::normalize($domainPart . '/' . $part), '/');
+
+            if (!isset($array[$part])) {
+                $this->filesystems[$domainPart] = new VirtualFilesystem($domainPart);
+                $array[$part] = array('/' => $this->filesystems[$domainPart]);
+            }
+
+            $array = & $array[$part];
+        }
+        $array['/'] = $filesystem;
+
         $this->filesystems[$domain] = $filesystem;
     }
 
@@ -73,5 +103,89 @@ class MountManager implements MountManagerInterface
     public function clear()
     {
         $this->filesystems = array();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getMountChildren($key, $domain)
+    {
+        $domainParts = explode('/', Path::normalize($domain . '/' . $key));
+        $array = $this->filesystemTree;
+        foreach ($domainParts as $part) {
+            if ($part !== '') {
+                if (!isset($array[$part])) {
+                    $array = array();
+                    break;
+                }
+                $array = $array[$part];
+            }
+        }
+
+        $result = array_keys($array);
+        $result = array_diff($result, array('/'));
+        $result = array_values($result);
+        return $result;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function analyse($uri)
+    {
+        $parts = array_merge(
+            array(
+                'scheme' => null,
+                'host' => null,
+                'path' => null,
+                'query' => null,
+                'fragment' => null,
+            ),
+            parse_url($uri) ? : array()
+        );
+
+        $path = Path::normalize($parts['host'] . $parts['path']);
+
+        $mountPoints = array_keys($this->filesystems);
+        usort(
+            $mountPoints,
+            function ($a, $b) {
+                return strlen($a) < strlen($b);
+            }
+        );
+        foreach ($mountPoints as $mountPoint) {
+            if (strpos($path, $mountPoint) === 0 && strlen($mountPoint) <= strlen($path)) {
+                $domain = $mountPoint;
+                break;
+            }
+        }
+
+        if (empty($domain)) {
+            throw new \InvalidArgumentException(
+                sprintf(
+                    'The specified path (%s) is invalid.',
+                    $path
+                )
+            );
+        }
+
+        $key = ltrim(str_replace($domain, '', $path), '/');
+
+        if (empty($key)) {
+            $key = '/';
+        }
+
+        if (null !== $parts['query']) {
+            $key .= '?' . $parts['query'];
+        }
+
+        if (null !== $parts['fragment']) {
+            $key .= '#' . $parts['fragment'];
+        }
+
+        return array(
+            'key' => $key,
+            'domain' => $domain
+        );
     }
 } 

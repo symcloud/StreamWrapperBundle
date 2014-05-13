@@ -254,7 +254,7 @@ class StreamWrapper implements StreamWrapperInterface
         $stream = $this->createStream($path);
 
         try {
-            $stream->open($this->createStreamMode('r+'));
+            $stream->open($this->createStreamMode('r'));
         } catch (\RuntimeException $e) {
             return false;
         }
@@ -269,41 +269,9 @@ class StreamWrapper implements StreamWrapperInterface
      */
     private function createStream($path)
     {
-        $parts = array_merge(
-            array(
-                'scheme' => null,
-                'host' => null,
-                'path' => null,
-                'query' => null,
-                'fragment' => null,
-            ),
-            parse_url($path) ? : array()
-        );
+        $result = StreamWrapperManager::getFilesystemMap()->analyse($path);
 
-        $domain = $parts['host'];
-        $key = substr($parts['path'], 1);
-        if (empty($key)) {
-            $key = '/';
-        }
-
-        if (null !== $parts['query']) {
-            $key .= '?' . $parts['query'];
-        }
-
-        if (null !== $parts['fragment']) {
-            $key .= '#' . $parts['fragment'];
-        }
-
-        if (empty($domain)) {
-            throw new \InvalidArgumentException(
-                sprintf(
-                    'The specified path (%s) is invalid.',
-                    $path
-                )
-            );
-        }
-
-        return StreamWrapperManager::getFilesystemMap()->get($domain)->createStream($key);
+        return StreamWrapperManager::getFilesystemMap()->get($result['domain'])->createStream($result['key'], $result['domain']);
     }
 
     /**

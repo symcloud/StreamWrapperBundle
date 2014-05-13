@@ -55,4 +55,19 @@ interface MountManagerInterface
      * @return void
      */
     public function clear();
+
+    /**
+     * returns analysed uri
+     * @param string $uri
+     * @return array keys: domain, key
+     */
+    public function analyse($uri);
+
+    /**
+     * returns array of children for given path
+     * @param string $key
+     * @param string $domain
+     * @return array
+     */
+    public function getMountChildren($key, $domain);
 }

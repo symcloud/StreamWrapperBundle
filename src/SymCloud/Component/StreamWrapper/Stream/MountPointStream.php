@@ -10,12 +10,11 @@
 
 namespace SymCloud\Component\StreamWrapper\Stream;
 
+use DateTime;
 use SymCloud\Component\StreamWrapper\Exception\NotSupportedException;
-use SymCloud\Component\StreamWrapper\MountManager;
-use SymCloud\Component\StreamWrapper\StreamWrapper;
 use SymCloud\Component\StreamWrapper\StreamWrapperManager;
 
-class LocalDirectoryStream implements StreamInterface
+class MountPointStream implements StreamInterface
 {
     /**
      * @var string
@@ -67,9 +66,6 @@ class LocalDirectoryStream implements StreamInterface
      */
     public function close()
     {
-        closedir($this->handle);
-
-        $this->handle = null;
         $this->children = array();
         $this->position = 0;
 
@@ -97,10 +93,6 @@ class LocalDirectoryStream implements StreamInterface
      */
     public function read($count = 0)
     {
-        if (!$this->handle) {
-            return false;
-        }
-
         if (sizeof($this->children) === $this->position) {
             return false;
         }
@@ -121,7 +113,25 @@ class LocalDirectoryStream implements StreamInterface
      */
     public function stat()
     {
-        return stat($this->path);
+        $time = time();
+
+        $stats = array(
+            'dev'   => 1,
+            'ino'   => 0,
+            'mode'  => 16877,
+            'nlink' => 1,
+            'uid'   => 0,
+            'gid'   => 0,
+            'rdev'  => 0,
+            'size'  => 0,
+            'atime' => $time,
+            'mtime' => $time,
+            'ctime' => $time,
+            'blksize' => -1,
+            'blocks'  => -1,
+        );
+
+        return array_merge(array_values($stats), $stats);
     }
 
     /**
@@ -145,17 +155,7 @@ class LocalDirectoryStream implements StreamInterface
      */
     public function open(StreamMode $mode = null)
     {
-        $handle = opendir($this->path);
-
-        if (false === $handle) {
-            throw new \RuntimeException(sprintf('File "%s" cannot be opened', $this->path));
-        }
-
-        $this->handle = $handle;
-        $this->children = array_merge(
-            scandir($this->path),
-            StreamWrapperManager::getFilesystemMap()->getMountChildren($this->domain, $this->key)
-        );
+        $this->children = StreamWrapperManager::getFilesystemMap()->getMountChildren($this->domain, $this->key);
         $this->position = 0;
 
         return true;

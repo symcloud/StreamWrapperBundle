@@ -17,7 +17,8 @@ interface StreamFactoryInterface
     /**
      * creates a new stream instance of the specified file
      * @param string $key
+     * @param string $domain
      * @return StreamInterface
      */
-    public function createStream($key);
+    public function createStream($key, $domain);
 } 
