@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <parameters>
+        <parameter key="symcloud_streamwrapper.mount_manager.class">SymCloud\Component\StreamWrapper\MountManager</parameter>
+    </parameters>
+    <services>
+        <service id="symcloud_streamwrapper.filesystem"
+                 class="SymCloud\Component\StreamWrapper\Filesystem\Filesystem"
+                 abstract="true">
+            <argument/>
+            <!-- The Adapter -->
+        </service>
+        <service id="symcloud_streamwrapper.adapter.local"
+                 class="SymCloud\Component\StreamWrapper\Adapter\LocalAdapter"
+                 abstract="true"
+                 public="false">
+            <argument/>
+            <!-- Directory -->
+            <argument/>
+            <!-- Create -->
+        </service>
+        <service id="symcloud_streamwrapper.mount_manager" class="%symcloud_streamwrapper.mount_manager.class%">
+            <argument/>
+            <!-- map of filesystems -->
+        </service>
+    </services>
+</container>
