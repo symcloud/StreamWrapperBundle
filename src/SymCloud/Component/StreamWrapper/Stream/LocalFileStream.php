@@ -14,7 +14,7 @@ namespace SymCloud\Component\StreamWrapper\Stream;
  * Class LocalStream
  * @package SymCloud\Component\StreamWrapper\Stream
  */
-class LocalFileStream implements StreamInterface
+class LocalFileStream extends Stream
 {
     /**
      * @var string

@@ -12,5 +12,10 @@ namespace SymCloud\Component\StreamWrapper\Adapter;
 
 interface AdapterInterface
 {
-
+    /**
+     * indicates whether the file exists
+     * @param string $key
+     * @return boolean
+     */
+    public function exists($key);
 } 

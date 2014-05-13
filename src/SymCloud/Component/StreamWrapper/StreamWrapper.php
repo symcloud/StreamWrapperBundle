@@ -10,9 +10,9 @@
 
 namespace SymCloud\Component\StreamWrapper;
 
+use SymCloud\Component\StreamWrapper\Exception\NotSupportedException;
 use SymCloud\Component\StreamWrapper\Stream\StreamInterface;
 use SymCloud\Component\StreamWrapper\Stream\StreamMode;
-use Symfony\Component\Intl\Exception\NotImplementedException;
 
 /**
  * Class StreamWrapper
@@ -71,7 +71,7 @@ class StreamWrapper implements StreamWrapperInterface
      */
     public function dir_rewinddir()
     {
-        throw new NotImplementedException('stream_lock');
+        throw new NotSupportedException('dir_rewinddir');
     }
 
     /**
@@ -79,7 +79,10 @@ class StreamWrapper implements StreamWrapperInterface
      */
     public function mkdir($path, $mode, $options)
     {
-        throw new NotImplementedException('stream_lock');
+        $pathInfo = pathinfo($path);
+        $stream = $this->createStream($pathInfo['dirname']);
+
+        $stream->mkdir($pathInfo['filename'], $mode, $options);
     }
 
     /**
@@ -87,7 +90,7 @@ class StreamWrapper implements StreamWrapperInterface
      */
     public function rename($path_from, $path_to)
     {
-        throw new NotImplementedException('stream_lock');
+        throw new NotSupportedException('rename');
     }
 
     /**
@@ -95,7 +98,7 @@ class StreamWrapper implements StreamWrapperInterface
      */
     public function rmdir($path, $options)
     {
-        throw new NotImplementedException('stream_lock');
+        throw new NotSupportedException('rmdir');
     }
 
     /**
@@ -149,7 +152,7 @@ class StreamWrapper implements StreamWrapperInterface
      */
     public function stream_lock($operation)
     {
-        throw new NotImplementedException('stream_lock');
+        throw new NotSupportedException('stream_lock');
     }
 
     /**
@@ -191,7 +194,7 @@ class StreamWrapper implements StreamWrapperInterface
      */
     public function stream_set_option($option, $arg1, $arg2)
     {
-        throw new NotImplementedException('stream_set_option');
+        throw new NotSupportedException('stream_set_option');
     }
 
     /**

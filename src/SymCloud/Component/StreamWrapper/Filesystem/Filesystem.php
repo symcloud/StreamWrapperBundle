@@ -36,17 +36,14 @@ class Filesystem implements FilesystemInterface
      */
     public function createStream($key, $domain)
     {
-        if ($key !== '/') {
-            $completePath = Path::normalize($domain . '/' . $key);
-            if (StreamWrapperManager::getFilesystemMap()->has($completePath)) {
-                return StreamWrapperManager::getFilesystemMap()->get($completePath)->createStream('/', $completePath);
+        $completePath = Path::normalize($domain . '/' . $key);
+        if ($key !== '/' && StreamWrapperManager::getFilesystemMap()->has($completePath)) {
+            return StreamWrapperManager::getFilesystemMap()->get($completePath)->createStream('/', $completePath);
+        } else {
+            if ($this->adapter instanceof StreamFactoryInterface) {
+                return $this->adapter->createStream($key, $domain);
             }
+            return new MemoryStream($this, $key);
         }
-
-        if ($this->adapter instanceof StreamFactoryInterface) {
-            return $this->adapter->createStream($key, $domain);
-        }
-
-        return new MemoryStream($this, $key);
     }
 }

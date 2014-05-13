@@ -108,4 +108,14 @@ class LocalAdapter implements AdapterInterface, StreamFactoryInterface
             throw new \RuntimeException(sprintf('The directory \'%s\' could not be created.', $directory));
         }
     }
+
+    /**
+     * indicates whether the file exists
+     * @param string $key
+     * @return boolean
+     */
+    public function exists($key)
+    {
+        return file_exists($this->computePath($key));
+    }
 }

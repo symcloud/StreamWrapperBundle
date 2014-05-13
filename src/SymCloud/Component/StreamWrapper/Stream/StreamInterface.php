@@ -33,4 +33,6 @@ interface StreamInterface
     public function open(StreamMode $mode = null);
 
     public function unlink();
+
+    public function mkdir($name, $mode, $options);
 }

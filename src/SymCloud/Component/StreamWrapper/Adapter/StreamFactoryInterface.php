@@ -12,7 +12,7 @@ namespace SymCloud\Component\StreamWrapper\Adapter;
 
 use SymCloud\Component\StreamWrapper\Stream\StreamInterface;
 
-interface StreamFactoryInterface
+interface StreamFactoryInterface extends AdapterInterface
 {
     /**
      * creates a new stream instance of the specified file

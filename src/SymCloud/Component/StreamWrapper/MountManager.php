@@ -55,8 +55,7 @@ class MountManager implements MountManagerInterface
             $domainPart = ltrim(Path::normalize($domainPart . '/' . $part), '/');
 
             if (!isset($array[$part])) {
-                $this->filesystems[$domainPart] = new VirtualFilesystem($domainPart);
-                $array[$part] = array('/' => $this->filesystems[$domainPart]);
+                $array[$part] = array();
             }
 
             $array = & $array[$part];
@@ -154,7 +153,18 @@ class MountManager implements MountManagerInterface
             }
         );
         foreach ($mountPoints as $mountPoint) {
-            if (strpos($path, $mountPoint) === 0 && strlen($mountPoint) <= strlen($path)) {
+            if (
+                // starts with mountpoint
+                strpos($path, $mountPoint) === 0 &&
+                // len of mount point smaller as len of path
+                strlen($mountPoint) <= strlen($path) &&
+                (
+                    // mountpoint don´t explode a part (the rest starts with a /)
+                    strpos(str_replace($mountPoint, '', $path), '/') === 0 ||
+                    // or mountpoint point to full path
+                    $mountPoint === $path
+                )
+            ) {
                 $domain = $mountPoint;
                 break;
             }

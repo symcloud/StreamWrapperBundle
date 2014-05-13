@@ -14,8 +14,9 @@ use SymCloud\Component\StreamWrapper\Exception\NotSupportedException;
 use SymCloud\Component\StreamWrapper\MountManager;
 use SymCloud\Component\StreamWrapper\StreamWrapper;
 use SymCloud\Component\StreamWrapper\StreamWrapperManager;
+use SymCloud\Component\StreamWrapper\Util\Path;
 
-class LocalDirectoryStream implements StreamInterface
+class LocalDirectoryStream extends Stream
 {
     /**
      * @var string
@@ -57,14 +58,6 @@ class LocalDirectoryStream implements StreamInterface
     /**
      * {@inheritdoc}
      */
-    public function cast($castAs)
-    {
-        throw new NotSupportedException('cast');
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function close()
     {
         closedir($this->handle);
@@ -74,22 +67,6 @@ class LocalDirectoryStream implements StreamInterface
         $this->position = 0;
 
         return true;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function eof()
-    {
-        throw new NotSupportedException('eof');
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function flush()
-    {
-        throw new NotSupportedException('flush');
     }
 
     /**
@@ -111,33 +88,9 @@ class LocalDirectoryStream implements StreamInterface
     /**
      * {@inheritdoc}
      */
-    public function seek($offset, $whence)
-    {
-        throw new NotSupportedException('seek');
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function stat()
     {
         return stat($this->path);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function tell()
-    {
-        throw new NotSupportedException('tell');
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function write($data)
-    {
-        throw new NotSupportedException('write');
     }
 
     /**
@@ -152,20 +105,20 @@ class LocalDirectoryStream implements StreamInterface
         }
 
         $this->handle = $handle;
-        $this->children = array_merge(
-            scandir($this->path),
-            StreamWrapperManager::getFilesystemMap()->getMountChildren($this->domain, $this->key)
+        $this->children = array_unique(
+            array_merge(
+                scandir($this->path),
+                StreamWrapperManager::getFilesystemMap()->getMountChildren($this->key, $this->domain)
+            )
         );
         $this->position = 0;
 
         return true;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function unlink()
+    public function mkdir($name, $mode, $options)
     {
-        throw new NotSupportedException('unlink');
+        mkdir(Path::normalize($this->path . '/' . $name), $mode, $options);
     }
+
 }
